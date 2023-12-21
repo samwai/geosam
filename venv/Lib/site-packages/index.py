@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Progress</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Add custom styles for better layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        #myChart {
+            width: 80%;
+            margin: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Teacher Progress</h1>
+
+    <!-- Display List of Filled Contents in a Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Term</th>
+                <th>Week</th>
+                <th>Lesson</th>
+                <th>Topic</th>
+                <th>Subtopic</th>
+                <th>Lesson Content</th>
+                <th>Remarks</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set unique_lessons = [] %}
+            {% for filled_content in filled_contents|sort(attribute='term,week,lesson') %}
+                {% set lesson_key = filled_content.term ~ '-' ~ filled_content.week ~ '-' ~ filled_content.lesson %}
+                {% if lesson_key not in unique_lessons %}
+                    <tr>
+                        <td>{{ filled_content.term }}</td>
+                        <td>{{ filled_content.week }}</td>
+                        <td>{{ filled_content.lesson }}</td>
+                        <td>{{ filled_content.topic }}</td>
+                        <td>{{ filled_content.subtopic }}</td>
+                        <td>{{ filled_content.lesson_content }}</td>
+                        <td>{{ filled_content.remarks }}</td>
+                    </tr>
+                    {% set _ = unique_lessons.append(lesson_key) %}
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Calculate and Display Percentage Covered -->
+    <h2>Percentage Covered</h2>
+    <p>
+        {% if filled_contents %}
+            {% set total_lessons = 70 %}
+            {% set filled_lessons = unique_lessons|length %}
+            Total Lessons: {{ total_lessons }}, Filled Lessons: {{ filled_lessons }}<br>
+            {% if total_lessons > 0 %}
+                {{ (filled_lessons / total_lessons * 100)|round(2) }}% covered
+            {% else %}
+                Total lessons is zero.
+            {% endif %}
+        {% else %}
+            No data to calculate percentage.
+        {% endif %}
+    </p>
+
+    <!-- Display Summary Chart -->
+    <canvas id="myChart"></canvas>
+
+    <a href="{{ url_for('form') }}">Fill Progress Form</a>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Aggregate Data for Summary Chart
+        var aggregatedData = {};
+        {% for filled_content in filled_contents %}
+            var key = filled_content.term + '-' + filled_content.week;
+            if (!aggregatedData[key]) {
+                aggregatedData[key] = 0;
+            }
+            aggregatedData[key]++;
+        {% endfor %}
+
+        // Add JavaScript code for Chart.js
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(aggregatedData),
+                datasets: [{
+                    label: 'Number of Lessons',
+                    data: Object.values(aggregatedData),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
