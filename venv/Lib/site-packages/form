@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Add custom styles for better layout */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin-top: -20px; /* Adjust margin based on your requirements */
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="{{ url_for('form') }}">
+        <h1>Progress Form</h1>
+
+        <label for="term">Term:</label>
+        <select id="term" name="term" required>
+            <option value="1">Term 1</option>
+            <option value="2">Term 2</option>
+            <option value="3">Term 3</option>
+        </select>
+
+        <label for="week">Week:</label>
+        <select id="week" name="week" required>
+            {% for i in range(1, 15) %}
+                <option value="{{ i }}">Week {{ i }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="lesson">Lesson:</label>
+        <select id="lesson" name="lesson" required>
+            {% for i in range(1, 6) %}
+                <option value="{{ i }}">Lesson {{ i }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="topic">Topic:</label>
+        <input type="text" id="topic" name="topic" required>
+
+        <label for="subtopic">Subtopic:</label>
+        <input type="text" id="subtopic" name="subtopic" required>
+
+        <label for="lesson_content">Lesson Content:</label>
+        <textarea id="lesson_content" name="lesson_content" rows="4" cols="50" required></textarea>
+
+        <label for="remarks">Remarks:</label>
+        <textarea id="remarks" name="remarks" rows="4" cols="50" required></textarea>
+        
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
